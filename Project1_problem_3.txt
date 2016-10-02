@@ -1,0 +1,30 @@
+hadoop dfs -put '/home/neeraj/Downloads/Crimes_2001_to_present.csv' /project1/crime_data_analysis/
+
+a = LOAD '/project1/crime_data_analysis/Crimes_2001_to_present.csv' using PigStorage(',') 
+AS (id:int,caseNumber:chararray,date:chararray,block:chararray,iucr:chararray,primarytype:chararray,description:chararray,locationDesc:chararray,
+arrest:chararray,domestic:chararray,beat:chararray,district:chararray,ward:chararray,communityArea:chararray,FBICode:chararray,
+xCordinate:chararray,yCordinate:chararray,year:int);
+
+dump a;
+
+/* remove empty tuples*/
+b = filter a by caseNumber != '';
+
+dump b;
+
+
+c = group b BY primarytype;
+
+dump c;
+
+/* get data for THEFT only*/
+d = FILTER c BY $0 == 'THEFT';
+dump d;
+
+e = foreach d generate $0,COUNT($1.id);
+
+dump e;
+
+(THEFT,64329)
+
+
